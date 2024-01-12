@@ -98,9 +98,17 @@ class AuthController {
     }
   }
 
-  void setTokens(AuthTokens tokens) {
+  void logOut() {
+    setTokens(null);
+  }
+
+  void setTokens(AuthTokens? tokens) {
     _tokens = tokens;
-    preferences.setString("tokens", jsonEncode(tokens.toJson()));
+    if (tokens == null) {
+      preferences.remove("tokens");
+    } else {
+      preferences.setString("tokens", jsonEncode(tokens.toJson()));
+    }
   }
 
   bool isLoggedIn() {
