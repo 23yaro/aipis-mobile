@@ -17,13 +17,13 @@ class ToDo {
     return [
       ToDo(
           id: '01',
-          todoName: 'ахахахахах',
+          todoName: 'Задача на Пятницу',
           todoText: '',
           todoTime: DateTime.now(),
           isDone: true),
       ToDo(
           id: '02',
-          todoName: 'пенисс',
+          todoName: 'Задача на Субботу',
           todoText: '',
           todoTime: DateTime.parse('2024-01-13'),
           isDone: true)

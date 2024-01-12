@@ -22,7 +22,7 @@ class AuthState extends State<Auth> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Добро пожаловать, ебать тебя в рот',
+            const Text('Добро пожаловать',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,

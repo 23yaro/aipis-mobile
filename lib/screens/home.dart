@@ -19,7 +19,6 @@ class _HomeState extends State<Home> {
   List<ToDo> currentWeek = List<ToDo>.empty();
   final _todoController = TextEditingController();
 
-
   @override
   void initState() {
     currentWeek = _getCurrentWeek();
@@ -151,6 +150,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+
   void _ToDoChange(ToDo todo) {
     if (_todoController.text != '') {
       setState(() {
@@ -163,7 +163,7 @@ class _HomeState extends State<Home> {
   void _ToDoOpen(ToDo todo) {
     Navigator.pushNamed(context, '/todo_screen', arguments: todo);
   }
-
+  void sex(){}
   final DateFormat formatter = DateFormat('EEEE', 'ru_RU');
 
   AppBar _buildAppBar() {
@@ -191,7 +191,7 @@ class _HomeState extends State<Home> {
                 .map((e) => ListTile(
                       onTap: () {
                         setState(() {
-                          currentWeek=_getWeek(e.key);
+                          currentWeek = _getWeek(e.key);
                         });
                       },
                       title: Text(
@@ -214,7 +214,8 @@ class _HomeState extends State<Home> {
     List<ToDo> tasks = todosList
         .where((element) =>
             DateFormat('MEd').format(element.todoTime) ==
-            DateFormat('MEd').format(DateTime.now())) //ТУТ НУЖНО СДЕЛАТЬ ВЫБОР ВРЕМЕНИ В ПРИЛОЖУХЕ
+            DateFormat('MEd').format(
+                DateTime.now())) //ТУТ НУЖНО СДЕЛАТЬ ВЫБОР ВРЕМЕНИ В ПРИЛОЖУХЕ
         .toList();
     return tasks;
   }
