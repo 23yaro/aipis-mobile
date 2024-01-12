@@ -2,6 +2,7 @@ class ToDo {
   String? id;
   String? todoName;
   String? todoText;
+  String tagName;
   DateTime todoTime;
   bool isDone;
 
@@ -10,25 +11,28 @@ class ToDo {
     required this.todoName,
     required this.todoText,
     required this.todoTime,
+    this.tagName = '',
     this.isDone = false,
   });
 
   static List<ToDo> todoList() {
     return [
       ToDo(
-          id: '01',
-          todoName: 'ахахахахах',
-          todoText: '',
-          todoTime: DateTime.now(),
-          isDone: true),
+        id: '01',
+        todoName: 'Задача на Пятницу',
+        todoText: '',
+        todoTime: DateTime.now(),
+        isDone: true,
+        tagName: 'penis',
+      ),
       ToDo(
           id: '02',
-          todoName: 'пенисс',
+          todoName: 'Задача на Субботу',
           todoText: '',
           todoTime: DateTime.parse('2024-01-13'),
-          isDone: true)
+          isDone: true,
+          tagName: 'penis',
+      )
     ];
-
   }
-
 }

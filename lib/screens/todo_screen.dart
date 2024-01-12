@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import '../model/todo.dart';
 import '../constants/colors.dart';
-import '../widgets/todo_item.dart';
-import '../screens/home.dart';
 
 
 class task extends StatefulWidget {
-  task({super.key});
+  const task({super.key});
 
   @override
   State<task> createState() => _taskState();
@@ -20,13 +18,13 @@ class _taskState extends State<task> {
 
   @override
   Widget build(BuildContext context) {
-    final todo_item = (ModalRoute.of(context)?.settings.arguments ?? '') as ToDo;
-    _taskController.text = todo_item.todoText.toString();
+    final todoItem = (ModalRoute.of(context)?.settings.arguments ?? '') as ToDo;
+    _taskController.text = todoItem.todoText.toString();
     return Scaffold(
       backgroundColor: tdBGColor,
       appBar: AppBar(
-        title: Text(todo_item.todoName.toString()),
-        leading: BackButton(onPressed: ()=>{Navigator.pop(context, todo_item.todoText)},),
+        title: Text(todoItem.todoName.toString()),
+        leading: BackButton(onPressed: ()=>{Navigator.pop(context, todoItem.todoText)},),
       ),
       body: Stack(
         children: [
@@ -38,9 +36,9 @@ class _taskState extends State<task> {
                     maxLines: null,
                     controller: _taskController,
                     onChanged:(text){
-                      todo_item.todoText=text;
+                      todoItem.todoText=text;
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         hintText: 'Описание', border: InputBorder.none),
                   ),
               )

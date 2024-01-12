@@ -1,27 +1,27 @@
+import 'dart:ffi' hide Size;
+import 'package:aipis_calendar/screens/todo_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-
 import '../model/todo.dart';
 import '../constants/colors.dart';
 import '../widgets/todo_item.dart';
-import '../screens/todo_screen.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final todosList = ToDo.todoList();
+  final todosList = ToDo.todoList(); //все таски
   List<ToDo> currentWeek = List<ToDo>.empty();
+  num curDay = int.parse(DateFormat('d').format(DateTime.now()));
   final _todoController = TextEditingController();
-
 
   @override
   void initState() {
+
     currentWeek = _getCurrentWeek();
     super.initState();
   }
@@ -35,7 +35,7 @@ class _HomeState extends State<Home> {
       body: Stack(
         children: [
           Container(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 15,
               right: 15,
               bottom: 80,
@@ -44,15 +44,20 @@ class _HomeState extends State<Home> {
               children: [
                 Expanded(
                   child: ListView(
-                    padding: EdgeInsets.only(top: 15),
+                    padding: const EdgeInsets.only(top: 15),
                     children: [
                       for (ToDo todoo in currentWeek)
-                        ToDoItem(
-                          todo: todoo,
-                          onToDoCompleted: _handleToDoCompleted,
-                          onDeleteItem: _deleteToDoItem,
-                          onChangeItem: _ToDoChange,
-                          taskMargin: _ToDoOpen,
+                        Column(
+                          children: [
+                            Text(DateFormat('Hm').format(todoo.todoTime) + ' ' + todoo.tagName),
+                            ToDoItem(
+                              todo: todoo,
+                              onToDoCompleted: _handleToDoCompleted,
+                              onDeleteItem: _deleteToDoItem,
+                              onChangeItem: _ToDoChange,
+                              taskMargin: _ToDoOpen,
+                            ),
+                          ],
                         ),
                     ],
                   ),
@@ -65,12 +70,12 @@ class _HomeState extends State<Home> {
             child: Row(children: [
               Expanded(
                 child: Container(
-                  margin: EdgeInsets.only(
+                  margin: const EdgeInsets.only(
                     bottom: 20,
                     right: 20,
                     left: 20,
                   ),
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 5,
                   ),
@@ -88,31 +93,31 @@ class _HomeState extends State<Home> {
                   ),
                   child: TextField(
                     controller: _todoController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         hintText: 'Новая задача', border: InputBorder.none),
                   ),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   bottom: 20,
                   right: 20,
                 ),
                 child: ElevatedButton(
-                  child: Text(
+                  onPressed: () {
+                    _addToDoItem(_todoController.text);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: tdBlue,
+                    minimumSize: Size(60, 60),
+                    elevation: 10,
+                  ),
+                  child: const Text(
                     '+',
                     style: TextStyle(
                       fontSize: 40,
                       color: Colors.white,
                     ),
-                  ),
-                  onPressed: () {
-                    _addToDoItem(_todoController.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: tdBlue,
-                    minimumSize: Size(60, 60),
-                    elevation: 10,
                   ),
                 ),
               ),
@@ -135,20 +140,40 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _addToDoItem(String toDo) {
+  void _addToDoItem(String toDo) async {
     if (_todoController.text != '') {
+    TimeOfDay? selectedTime;
+    final TimeOfDay? timeofDay = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+    selectedTime = timeofDay;
+
+    if (selectedTime == null) {
+      return;
+    }
+
+    final now = DateTime.now();
+
       setState(() {
         ToDo add = ToDo(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           todoName: toDo,
           todoText: '',
-          todoTime: DateTime.now(),
+          todoTime: DateTime(now.year, now.month, curDay.toInt(),
+              selectedTime!.hour, selectedTime.minute),
         );
+
         currentWeek.add(add);
         todosList.add(add);
+        currentWeek.sort((a, b){ //sorting in descending order
+          return a.todoTime.compareTo(b.todoTime);
+        });
       });
       _todoController.clear();
     }
+    else return;
   }
 
   void _ToDoChange(ToDo todo) {
@@ -167,12 +192,13 @@ class _HomeState extends State<Home> {
   final DateFormat formatter = DateFormat('EEEE', 'ru_RU');
 
   AppBar _buildAppBar() {
+    final now = DateTime.now();
     return AppBar(
-      leading: DrawerButton(),
+      leading: const DrawerButton(),
       backgroundColor: tdBGColor,
       elevation: 0,
       title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Text(toBeginningOfSentenceCase(formatter.format(DateTime.now())))
+        Text(toBeginningOfSentenceCase(DateFormat('EEEE', 'ru_RU').format(DateTime(now.year, now.month, curDay.toInt()))))
       ]),
     );
   }
@@ -183,21 +209,21 @@ class _HomeState extends State<Home> {
         children: [
           Expanded(
               child: ListView(
-            physics: NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.only(top: 80),
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 80),
             children: formatter.dateSymbols.STANDALONEWEEKDAYS
                 .asMap()
                 .entries
                 .map((e) => ListTile(
                       onTap: () {
                         setState(() {
-                          currentWeek=_getWeek(e.key);
+                          currentWeek = _getWeek(e.key);
                         });
                       },
                       title: Text(
                         e.value,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 32,
                           letterSpacing: 4.5,
                         ),
@@ -214,28 +240,35 @@ class _HomeState extends State<Home> {
     List<ToDo> tasks = todosList
         .where((element) =>
             DateFormat('MEd').format(element.todoTime) ==
-            DateFormat('MEd').format(DateTime.now())) //ТУТ НУЖНО СДЕЛАТЬ ВЫБОР ВРЕМЕНИ В ПРИЛОЖУХЕ
+            DateFormat('MEd').format(
+                DateTime.now()))
         .toList();
+    currentWeek.sort((a, b){ //sorting in descending order
+      return a.todoTime.compareTo(b.todoTime);
+    });
     return tasks;
   }
 
   List<ToDo> _getWeek(key) {
-    int curDay_number = 1;
+    int curdayNumber = 1;
 
-    String weekGay = DateFormat('EEEE', 'ru_RU').format(DateTime.now());
+    String weekDay = DateFormat('EEEE', 'ru_RU').format(DateTime.now());
 
-    for (final gay in formatter.dateSymbols.STANDALONEWEEKDAYS) {
-      if (gay == weekGay) break;
-      curDay_number = curDay_number + 1;
+    for (final day in formatter.dateSymbols.STANDALONEWEEKDAYS) {
+      if (day == weekDay) break;
+      curdayNumber = curdayNumber + 1;
     }
 
     String date = DateFormat('d').format(DateTime.now());
-    num curDay = int.parse(date) - (curDay_number - key) + 1;
+    curDay = int.parse(date) - (curdayNumber - key) + 1;
 
     List<ToDo> tasks = todosList
         .where((element) =>
             int.parse(DateFormat('d').format(element.todoTime)) == curDay)
         .toList();
+
+
+
     return tasks;
   }
 }

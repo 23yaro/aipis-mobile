@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:aipis_calendar/api/auth.dart';
 import 'package:aipis_calendar/api/events.dart';
 import 'package:aipis_calendar/model/event.dart';
 
@@ -21,7 +20,7 @@ class CalendarEventRepository {
       return events;
     }
 
-    // TODO: пиздец
+    // TODO
     try {
       var response = await getEvents(999, 0, simpleFilter);
       lastFetch = DateTime.now();

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/todo.dart';
 import '../constants/colors.dart';
-import '../screens/todo_screen.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
@@ -11,19 +10,18 @@ class ToDoItem extends StatelessWidget {
   final taskMargin;
 
   const ToDoItem(
-      {Key? key,
+      {super.key,
       required this.todo,
       required this.onToDoCompleted,
       required this.onDeleteItem,
       required this.onChangeItem,
       required this.taskMargin,
-      })
-      : super(key: key);
+      });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 20),
       child: ListTile(
         onTap: () {
           taskMargin(todo);
@@ -31,7 +29,7 @@ class ToDoItem extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         tileColor: Colors.white,
         leading: IconButton(
           color: tdBlue,
@@ -55,7 +53,7 @@ class ToDoItem extends StatelessWidget {
           IconButton(
             color: tdBlue,
             iconSize: 24,
-            icon: Icon(Icons.create_rounded),
+            icon: const Icon(Icons.create_rounded),
             onPressed: () {
               // print('Clicked on delete icon');
               onChangeItem(todo);
@@ -64,7 +62,7 @@ class ToDoItem extends StatelessWidget {
           IconButton(
             color: tdBlue,
             iconSize: 24,
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               // print('Clicked on delete icon');
               onDeleteItem(todo.id);
@@ -72,6 +70,9 @@ class ToDoItem extends StatelessWidget {
           ),
         ]),
       ),
+
     );
+
+
   }
 }
