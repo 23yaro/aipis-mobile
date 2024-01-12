@@ -3,8 +3,10 @@ import 'dart:isolate';
 import 'package:aipis_calendar/screens/login_form.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import './screens/todo_screen.dart';
 import './screens/home.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'screens/auth.dart';
 
 @pragma('vm:entry-point')
@@ -23,6 +25,7 @@ void notifyAboutEvent() {
 }
 
 void main() async {
+  initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   await AndroidAlarmManager.initialize();
   // TODO: check auth
@@ -42,7 +45,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Home(),
         '/auth': (context) => Auth(),
-        '/login': (context) => Login()
+        '/login': (context) => Login(),
+        '/todo_screen': (context) => task(),
       },
     );
   }
