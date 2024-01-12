@@ -1,4 +1,5 @@
 import 'dart:ffi' hide Size;
+import 'package:aipis_calendar/api/auth.dart';
 import 'package:aipis_calendar/screens/todo_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +22,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-
     currentWeek = _getCurrentWeek();
     super.initState();
   }
@@ -49,7 +49,9 @@ class _HomeState extends State<Home> {
                       for (ToDo todoo in currentWeek)
                         Column(
                           children: [
-                            Text(DateFormat('Hm').format(todoo.todoTime) + ' ' + todoo.tagName),
+                            Text(DateFormat('Hm').format(todoo.todoTime) +
+                                ' ' +
+                                todoo.tagName),
                             ToDoItem(
                               todo: todoo,
                               onToDoCompleted: _handleToDoCompleted,
@@ -142,19 +144,19 @@ class _HomeState extends State<Home> {
 
   void _addToDoItem(String toDo) async {
     if (_todoController.text != '') {
-    TimeOfDay? selectedTime;
-    final TimeOfDay? timeofDay = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.dial,
-    );
-    selectedTime = timeofDay;
+      TimeOfDay? selectedTime;
+      final TimeOfDay? timeofDay = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        initialEntryMode: TimePickerEntryMode.dial,
+      );
+      selectedTime = timeofDay;
 
-    if (selectedTime == null) {
-      return;
-    }
+      if (selectedTime == null) {
+        return;
+      }
 
-    final now = DateTime.now();
+      final now = DateTime.now();
 
       setState(() {
         ToDo add = ToDo(
@@ -167,13 +169,14 @@ class _HomeState extends State<Home> {
 
         currentWeek.add(add);
         todosList.add(add);
-        currentWeek.sort((a, b){ //sorting in descending order
+        currentWeek.sort((a, b) {
+          //sorting in descending order
           return a.todoTime.compareTo(b.todoTime);
         });
       });
       _todoController.clear();
-    }
-    else return;
+    } else
+      return;
   }
 
   void _ToDoChange(ToDo todo) {
@@ -198,7 +201,8 @@ class _HomeState extends State<Home> {
       backgroundColor: tdBGColor,
       elevation: 0,
       title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Text(toBeginningOfSentenceCase(DateFormat('EEEE', 'ru_RU').format(DateTime(now.year, now.month, curDay.toInt()))))
+        Text(toBeginningOfSentenceCase(DateFormat('EEEE', 'ru_RU')
+            .format(DateTime(now.year, now.month, curDay.toInt()))))
       ]),
     );
   }
@@ -230,7 +234,15 @@ class _HomeState extends State<Home> {
                       ),
                     ))
                 .toList(),
-          ))
+          )),
+          ListTile(
+              onTap: () {
+                AuthController().logOut();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/auth', (route) => false);
+              },
+              title: const Row(
+                  children: [Icon(Icons.logout), Text("Выйти из аккаунта")]))
         ],
       ),
     );
@@ -240,10 +252,10 @@ class _HomeState extends State<Home> {
     List<ToDo> tasks = todosList
         .where((element) =>
             DateFormat('MEd').format(element.todoTime) ==
-            DateFormat('MEd').format(
-                DateTime.now()))
+            DateFormat('MEd').format(DateTime.now()))
         .toList();
-    currentWeek.sort((a, b){ //sorting in descending order
+    currentWeek.sort((a, b) {
+      //sorting in descending order
       return a.todoTime.compareTo(b.todoTime);
     });
     return tasks;
@@ -266,8 +278,6 @@ class _HomeState extends State<Home> {
         .where((element) =>
             int.parse(DateFormat('d').format(element.todoTime)) == curDay)
         .toList();
-
-
 
     return tasks;
   }
