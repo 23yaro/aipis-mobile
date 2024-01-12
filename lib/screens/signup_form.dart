@@ -4,14 +4,14 @@ import 'package:aipis_calendar/model/event_repository.dart';
 import 'package:aipis_calendar/screens/shared.dart';
 import 'package:flutter/material.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<StatefulWidget> createState() => LoginState();
+  State<StatefulWidget> createState() => SignUpState();
 }
 
-class LoginState extends State<Login> {
+class SignUpState extends State<SignUp> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool authenticating = false;
@@ -86,6 +86,8 @@ class LoginState extends State<Login> {
                                 authenticating = true;
                                 try {
                                   await AuthController.the
+                                      .signUp(email, password);
+                                  await AuthController.the
                                       .signIn(email, password);
                                   if (AuthController.the.isLoggedIn()) {
                                     print(await CalendarEventRepository()
@@ -96,6 +98,11 @@ class LoginState extends State<Login> {
                                       return;
                                     }
                                   }
+                                } on UserAlreadyExistsException {
+                                  if (context.mounted) {
+                                    makeAlertWindow(context,
+                                        "Пользователь с такой почтой уже существует.");
+                                  }
                                 } catch (e) {
                                   if (context.mounted) {
                                     makeAlertWindow(context, "$e");
@@ -103,7 +110,7 @@ class LoginState extends State<Login> {
                                 }
                                 authenticating = false;
                               },
-                        child: const Text("Войти"))
+                        child: const Text("Создать аккаунт"))
                   ],
                 ))));
   }

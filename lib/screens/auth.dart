@@ -1,5 +1,4 @@
 import 'package:aipis_calendar/api/auth.dart';
-import 'package:aipis_calendar/model/event_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:aipis_calendar/constants/colors.dart';
 
@@ -14,6 +13,8 @@ class AuthState extends State<Auth> {
   @override
   Widget build(BuildContext context) {
     if (AuthController.the.isLoggedIn()) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/', (route) => false);
       return const Scaffold();
     }
 
@@ -22,23 +23,31 @@ class AuthState extends State<Auth> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Добро пожаловать, ебать тебя в рот',
+            const Text('Добро пожаловать в Календарь',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 40)),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/login', (route) => false);
-                },
-                child: const Text("Войти")),
-            ElevatedButton(
-                onPressed: () {
-                  print(CalendarEventRepository.the.getAllEvents());
-                },
-                child: const Text("Get"))
+            IntrinsicWidth(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/login', (route) => false);
+                        },
+                        child: const Text("Войти")),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/signup', (route) => false);
+                        },
+                        child: const Text("Зарегистрироваться"))
+                  ]),
+            )
           ],
         ));
   }

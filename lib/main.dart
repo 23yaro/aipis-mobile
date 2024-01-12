@@ -1,12 +1,12 @@
-import 'dart:isolate';
-
+import 'package:aipis_calendar/api/auth.dart';
+import 'package:aipis_calendar/constants/settings.dart';
 import 'package:aipis_calendar/screens/login_form.dart';
+import 'package:aipis_calendar/screens/signup_form.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import './screens/todo_screen.dart';
 import './screens/home.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'screens/auth.dart';
 
 @pragma('vm:entry-point')
@@ -25,8 +25,10 @@ void notifyAboutEvent() {
 }
 
 void main() async {
-  initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
+
+  await initPreferences();
+  initializeDateFormatting();
   await AndroidAlarmManager.initialize();
   // TODO: check auth
   runApp(const MyApp());
@@ -41,11 +43,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Calendar',
-      initialRoute: '/auth',
+      initialRoute: AuthController.the.isLoggedIn() ? '/' : '/auth',
       routes: {
         '/': (context) => Home(),
         '/auth': (context) => Auth(),
         '/login': (context) => Login(),
+        '/signup': (context) => SignUp(),
         '/todo_screen': (context) => task(),
       },
     );
