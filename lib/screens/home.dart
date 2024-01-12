@@ -192,12 +192,13 @@ class _HomeState extends State<Home> {
   final DateFormat formatter = DateFormat('EEEE', 'ru_RU');
 
   AppBar _buildAppBar() {
+    final now = DateTime.now();
     return AppBar(
       leading: const DrawerButton(),
       backgroundColor: tdBGColor,
       elevation: 0,
       title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Text(toBeginningOfSentenceCase(formatter.format(DateTime.now())))
+        Text(toBeginningOfSentenceCase(DateFormat('EEEE', 'ru_RU').format(DateTime(now.year, now.month, curDay.toInt()))))
       ]),
     );
   }
@@ -240,7 +241,7 @@ class _HomeState extends State<Home> {
         .where((element) =>
             DateFormat('MEd').format(element.todoTime) ==
             DateFormat('MEd').format(
-                DateTime.now())) //ТУТ НУЖНО СДЕЛАТЬ ВЫБОР ВРЕМЕНИ В ПРИЛОЖУХЕ
+                DateTime.now()))
         .toList();
     currentWeek.sort((a, b){ //sorting in descending order
       return a.todoTime.compareTo(b.todoTime);
