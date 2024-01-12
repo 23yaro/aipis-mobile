@@ -1,5 +1,4 @@
 import 'package:aipis_calendar/api/auth.dart';
-import 'package:aipis_calendar/constants/colors.dart';
 import 'package:aipis_calendar/constants/regex.dart';
 import 'package:aipis_calendar/model/event_repository.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,3 @@
-import 'dart:isolate';
 
 import 'package:aipis_calendar/screens/login_form.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import './screens/todo_screen.dart';
 import './screens/home.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'screens/auth.dart';
 
 @pragma('vm:entry-point')
@@ -43,10 +41,10 @@ class MyApp extends StatelessWidget {
       title: 'Calendar',
       initialRoute: '/auth',
       routes: {
-        '/': (context) => Home(),
-        '/auth': (context) => Auth(),
-        '/login': (context) => Login(),
-        '/todo_screen': (context) => task(),
+        '/': (context) => const Home(),
+        '/auth': (context) => const Auth(),
+        '/login': (context) => const Login(),
+        '/todo_screen': (context) => const task(),
       },
     );
   }
