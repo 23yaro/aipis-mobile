@@ -13,8 +13,7 @@ class AuthState extends State<Auth> {
   @override
   Widget build(BuildContext context) {
     if (AuthController.the.isLoggedIn()) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
       return const Scaffold();
     }
 
@@ -36,14 +35,14 @@ class AuthState extends State<Auth> {
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, '/login', (route) => false);
+                          Navigator.pushNamed(
+                              context, '/login');
                         },
                         child: const Text("Войти")),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, '/signup', (route) => false);
+                          Navigator.pushNamed(
+                              context, '/signup');
                         },
                         child: const Text("Зарегистрироваться"))
                   ]),
