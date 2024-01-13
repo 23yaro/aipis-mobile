@@ -47,7 +47,7 @@ Future<GetEventsResponse> getEvents(
   });
   if (response.statusCode == HttpStatus.ok) {
     return GetEventsResponse.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
   } else {
     throw Exception('Failed to load events: ${response.statusCode}');
   }
@@ -72,7 +72,7 @@ Future<CalendarEvent> createEvent(
         "Authorization": "Bearer ${AuthController().getAccessToken()}"
       });
   if (response.statusCode == HttpStatus.ok) {
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     return CalendarEvent.fromJson(json);
   }
   throw Exception('Failed to create an event: ${response.statusCode}');
@@ -92,7 +92,7 @@ Future<void> updateEvent(CalendarEvent event) async {
       });
   if (response.statusCode == HttpStatus.ok) {
     // TODO: update event from the returned JSON
-    // final json = jsonDecode(response.body) as Map<String, dynamic>;
+    // final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     // return CalendarEvent.fromJson(json);
     return;
   }

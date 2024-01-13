@@ -73,7 +73,7 @@ class AuthController {
     }
 
     if (response.statusCode == HttpStatus.badRequest) {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       throw RangeError('Invalid email or password: ${json['message']}');
     }
     throw Exception('Unknown error: ${response.statusCode}');
@@ -88,10 +88,10 @@ class AuthController {
         });
 
     if (response.statusCode == HttpStatus.ok) {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       setTokens(AuthTokens.fromJson(json));
     } else if (response.statusCode == HttpStatus.badRequest) {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       throw RangeError('Invalid email or password: ${json['message']}');
     } else {
       throw Exception('Unknown error: ${response.statusCode}');
