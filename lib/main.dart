@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Calendar',
+      title: 'Time Manager',
       initialRoute: AuthController.the.isLoggedIn() ? '/' : '/auth',
       routes: {
         '/': (context) => Home(),
