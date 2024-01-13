@@ -17,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   num curDay = int.parse(DateFormat('d').format(DateTime.now()));
+  int currentDayOfWeek = DateTime.now().weekday;
   final _ceController = TextEditingController();
 
   @override
@@ -212,8 +213,7 @@ class _HomeState extends State<Home> {
       backgroundColor: tdBGColor,
       elevation: 0,
       title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Text(toBeginningOfSentenceCase(DateFormat('EEEE', 'ru_RU')
-            .format(DateTime(now.year, now.month, curDay.toInt()))))
+        Text(toBeginningOfSentenceCase(formatter.dateSymbols.STANDALONEWEEKDAYS[currentDayOfWeek]))
       ]),
     );
   }
@@ -233,11 +233,11 @@ class _HomeState extends State<Home> {
                       onTap: () {
                         setState(() {
                           // TODO:
-                          // currentWeek = await _getWeek(e.key);
+                          currentDayOfWeek = e.key;
                         });
                       },
                       title: Text(
-                        e.value,
+                        toBeginningOfSentenceCase(e.value),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 32,
@@ -284,32 +284,11 @@ class _HomeState extends State<Home> {
 
   Future<List<CalendarEvent>> _getCurrentWeek() async {
     List<CalendarEvent> tasks = (await CalendarEventRepository().getAll())
-        .where((element) => element.dateTime.weekday == DateTime.now().weekday)
+        .where((element) => element.dateTime.weekday == currentDayOfWeek)
         .toList();
     tasks.sort((a, b) {
       return a.dateTime.compareTo(b.dateTime);
     });
-    return tasks;
-  }
-
-  Future<List<CalendarEvent>> _getWeek(key) async {
-    int curdayNumber = 1;
-
-    String weekDay = DateFormat('EEEE', 'ru_RU').format(DateTime.now());
-
-    for (final day in formatter.dateSymbols.STANDALONEWEEKDAYS) {
-      if (day == weekDay) break;
-      curdayNumber = curdayNumber + 1;
-    }
-
-    String date = DateFormat('d').format(DateTime.now());
-    curDay = int.parse(date) - (curdayNumber - key) + 1;
-
-    List<CalendarEvent> tasks = (await CalendarEventRepository().getAll())
-        .where((element) =>
-            int.parse(DateFormat('d').format(element.dateTime)) == curDay)
-        .toList();
-
     return tasks;
   }
 }
