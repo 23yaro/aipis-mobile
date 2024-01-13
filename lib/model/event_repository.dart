@@ -13,12 +13,13 @@ class CalendarEventRepository {
 
   factory CalendarEventRepository() => the;
 
-  Future<List<CalendarEvent>> getAllEvents([String simpleFilter = ""]) async {
+  Future<List<CalendarEvent>> getAll([String simpleFilter = ""]) async {
     final date = DateTime.now();
     // Кешируем раз в пять минут
-    if (date.difference(lastFetch).inMinutes < 5) {
-      return events;
-    }
+    // TODO: не кешируем, похер
+    // if (date.difference(lastFetch).inMinutes < 5) {
+    //   return events;
+    // }
 
     // TODO
     try {
@@ -34,4 +35,25 @@ class CalendarEventRepository {
 
     return events;
   }
+
+  Future<void> update(CalendarEvent event) async {
+    try {
+      await updateEvent(event);
+    } on SocketException {
+      throw UnimplementedError(
+          "Локальное хранилище ещё не сделали, нужен интернет");
+    }
+  }
+
+  Future<void> removeById(int id) async {
+    try {
+      await removeEvent(id);
+    } on SocketException {
+      throw UnimplementedError(
+          "Локальное хранилище ещё не сделали, нужен интернет");
+    }
+  }
+
+  Future<void> remove(CalendarEvent event) async =>
+      removeById(event.id);
 }

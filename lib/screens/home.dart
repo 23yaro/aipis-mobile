@@ -1,11 +1,12 @@
-import 'dart:ffi' hide Size;
 import 'package:aipis_calendar/api/auth.dart';
-import 'package:aipis_calendar/screens/todo_screen.dart';
+import 'package:aipis_calendar/api/events.dart';
+import 'package:aipis_calendar/model/event.dart';
+import 'package:aipis_calendar/model/event_repository.dart';
+import 'package:aipis_calendar/screens/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../model/todo.dart';
 import '../constants/colors.dart';
-import '../widgets/todo_item.dart';
+import '../widgets/event_item.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,142 +16,151 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final todosList = ToDo.todoList(); //все таски
-  List<ToDo> currentWeek = List<ToDo>.empty();
   num curDay = int.parse(DateFormat('d').format(DateTime.now()));
-  final _todoController = TextEditingController();
+  final _ceController = TextEditingController();
 
   @override
   void initState() {
-    currentWeek = _getCurrentWeek();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: tdBGColor,
-      appBar: _buildAppBar(),
-      drawer: _buildDrawer(),
-      body: Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(
-              left: 15,
-              right: 15,
-              bottom: 80,
-            ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.only(top: 15),
-                    children: [
-                      for (ToDo todoo in currentWeek)
-                        Column(
-                          children: [
-                            Text(DateFormat('Hm').format(todoo.todoTime) +
-                                ' ' +
-                                todoo.tagName),
-                            ToDoItem(
-                              todo: todoo,
-                              onToDoCompleted: _handleToDoCompleted,
-                              onDeleteItem: _deleteToDoItem,
-                              onChangeItem: _ToDoChange,
-                              taskMargin: _ToDoOpen,
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(children: [
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 20,
-                    right: 20,
-                    left: 20,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        offset: Offset(0.0, 0.0),
-                        blurRadius: 10.0,
-                        spreadRadius: 0.0,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: TextField(
-                    controller: _todoController,
-                    decoration: const InputDecoration(
-                        hintText: 'Новая задача', border: InputBorder.none),
-                  ),
-                ),
+    try {
+      return Scaffold(
+        backgroundColor: tdBGColor,
+        appBar: _buildAppBar(),
+        drawer: _buildDrawer(),
+        body: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(
+                left: 15,
+                right: 15,
+                bottom: 80,
               ),
-              Container(
-                margin: const EdgeInsets.only(
-                  bottom: 20,
-                  right: 20,
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    _addToDoItem(_todoController.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: tdBlue,
-                    minimumSize: Size(60, 60),
-                    elevation: 10,
-                  ),
-                  child: const Text(
-                    '+',
-                    style: TextStyle(
-                      fontSize: 40,
+              child: Column(
+                children: [
+                  Expanded(
+                      child: FutureBuilder<List<CalendarEvent>>(
+                          future: _getCurrentWeek(),
+                          builder: (BuildContext context,
+                                  AsyncSnapshot<List<CalendarEvent>> list) =>
+                              ListView(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  children: list.data
+                                          ?.map((ce) => Column(
+                                                children: [
+                                                  Text(
+                                                      '${DateFormat('Hm').format(ce.dateTime)} ${ce.tagIds.map((e) => "$e").join(" ")}'),
+                                                  CalendarEventItem(
+                                                    calendarEvent: ce,
+                                                    onEventCompleted:
+                                                        _handleCECompleted,
+                                                    onDeleteItem: _deleteCEItem,
+                                                    onChangeItem: _CEChange,
+                                                    taskMargin: (ce) {
+                                                      _CEOpen(ce);
+                                                    },
+                                                  ),
+                                                ],
+                                              ))
+                                          .toList() ??
+                                      [])))
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(children: [
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      bottom: 20,
+                      right: 20,
+                      left: 20,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
                       color: Colors.white,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 0.0),
+                          blurRadius: 10.0,
+                          spreadRadius: 0.0,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextField(
+                      controller: _ceController,
+                      decoration: const InputDecoration(
+                          hintText: 'Новая задача', border: InputBorder.none),
                     ),
                   ),
                 ),
-              ),
-            ]),
-          ),
-        ],
-      ),
-    );
+                Container(
+                  margin: const EdgeInsets.only(
+                    bottom: 20,
+                    right: 20,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addCEItem(_ceController.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: tdBlue,
+                      minimumSize: Size(60, 60),
+                      elevation: 10,
+                    ),
+                    child: const Text(
+                      '+',
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          ],
+        ),
+      );
+    } on NotLoggedInException {
+      Future.microtask(() => gotoAuth(context));
+      return Scaffold(
+          backgroundColor: tdBGColor,
+          appBar: _buildAppBar(),
+          drawer: _buildDrawer());
+    }
   }
 
-  void _handleToDoCompleted(ToDo todo) {
-    setState(() {
-      todo.isDone = !todo.isDone;
-    });
+  void _handleCECompleted(CalendarEvent ce) {
+    ce.complete = !ce.complete;
+    CalendarEventRepository().update(ce);
+    // TODO: do we even need this?
+    setState(() {});
   }
 
-  void _deleteToDoItem(String id) {
-    setState(() {
-      currentWeek.removeWhere((item) => item.id == id);
-    });
+  void _deleteCEItem(int id) {
+    CalendarEventRepository().removeById(id);
+    setState(() {});
   }
 
-  void _addToDoItem(String toDo) async {
-    if (_todoController.text != '') {
+  void _addCEItem(String toDo) async {
+    if (_ceController.text != '') {
       TimeOfDay? selectedTime;
-      final TimeOfDay? timeofDay = await showTimePicker(
+      final TimeOfDay? timeOfDay = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
         initialEntryMode: TimePickerEntryMode.dial,
       );
-      selectedTime = timeofDay;
+      selectedTime = timeOfDay;
 
       if (selectedTime == null) {
         return;
@@ -158,38 +168,38 @@ class _HomeState extends State<Home> {
 
       final now = DateTime.now();
 
-      setState(() {
-        ToDo add = ToDo(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          todoName: toDo,
-          todoText: '',
-          todoTime: DateTime(now.year, now.month, curDay.toInt(),
-              selectedTime!.hour, selectedTime.minute),
-        );
-
-        currentWeek.add(add);
-        todosList.add(add);
-        currentWeek.sort((a, b) {
-          //sorting in descending order
-          return a.todoTime.compareTo(b.todoTime);
-        });
-      });
-      _todoController.clear();
-    } else
-      return;
+      CalendarEvent add = await createEvent(
+          toDo,
+          '',
+          DateTime(now.year, now.month, curDay.toInt(), selectedTime.hour,
+              selectedTime.minute));
+      // TODO: same
+      setState(() {});
+      _ceController.clear();
+    }
   }
 
-  void _ToDoChange(ToDo todo) {
-    if (_todoController.text != '') {
+  void _CEChange(CalendarEvent ce) {
+    if (_ceController.text != '') {
+      ce.name = _ceController.text;
+      CalendarEventRepository().update(ce);
       setState(() {
-        todo.todoName = _todoController.text;
-        _todoController.clear();
+        _ceController.clear();
       });
     }
   }
 
-  void _ToDoOpen(ToDo todo) {
-    Navigator.pushNamed(context, '/todo_screen', arguments: todo);
+  Future<void> _CEOpen(CalendarEvent ce) async {
+    // Ждём, пока пользователь закончит редактировать
+    final result =
+        await Navigator.pushNamed(context, '/edit', arguments: ce);
+
+    if (!mounted) {
+      return;
+    }
+
+    // TODO:
+    setState(() {});
   }
 
   final DateFormat formatter = DateFormat('EEEE', 'ru_RU');
@@ -221,7 +231,8 @@ class _HomeState extends State<Home> {
                 .map((e) => ListTile(
                       onTap: () {
                         setState(() {
-                          currentWeek = _getWeek(e.key);
+                          // TODO:
+                          // currentWeek = await _getWeek(e.key);
                         });
                       },
                       title: Text(
@@ -237,9 +248,31 @@ class _HomeState extends State<Home> {
           )),
           ListTile(
               onTap: () {
-                AuthController().logOut();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/auth', (route) => false);
+                Widget yesButton = TextButton(
+                  child: const Text("Да"),
+                  onPressed: () {
+                    AuthController().logOut();
+                    gotoAuth(context);
+                  },
+                );
+                Widget noButton = TextButton(
+                  child: const Text("Нет"),
+                  onPressed: () => Navigator.pop(context),
+                );
+
+                AlertDialog alert = AlertDialog(
+                  title: const Text("Внимание"),
+                  content:
+                      const Text("Вы действительно хотите выйти из аккаунта?"),
+                  actions: [yesButton, noButton],
+                );
+
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  },
+                );
               },
               title: const Row(
                   children: [Icon(Icons.logout), Text("Выйти из аккаунта")]))
@@ -248,20 +281,17 @@ class _HomeState extends State<Home> {
     );
   }
 
-  List<ToDo> _getCurrentWeek() {
-    List<ToDo> tasks = todosList
-        .where((element) =>
-            DateFormat('MEd').format(element.todoTime) ==
-            DateFormat('MEd').format(DateTime.now()))
+  Future<List<CalendarEvent>> _getCurrentWeek() async {
+    List<CalendarEvent> tasks = (await CalendarEventRepository().getAll())
+        .where((element) => element.dateTime.weekday == DateTime.now().weekday)
         .toList();
-    currentWeek.sort((a, b) {
-      //sorting in descending order
-      return a.todoTime.compareTo(b.todoTime);
+    tasks.sort((a, b) {
+      return a.dateTime.compareTo(b.dateTime);
     });
     return tasks;
   }
 
-  List<ToDo> _getWeek(key) {
+  Future<List<CalendarEvent>> _getWeek(key) async {
     int curdayNumber = 1;
 
     String weekDay = DateFormat('EEEE', 'ru_RU').format(DateTime.now());
@@ -274,9 +304,9 @@ class _HomeState extends State<Home> {
     String date = DateFormat('d').format(DateTime.now());
     curDay = int.parse(date) - (curdayNumber - key) + 1;
 
-    List<ToDo> tasks = todosList
+    List<CalendarEvent> tasks = (await CalendarEventRepository().getAll())
         .where((element) =>
-            int.parse(DateFormat('d').format(element.todoTime)) == curDay)
+            int.parse(DateFormat('d').format(element.dateTime)) == curDay)
         .toList();
 
     return tasks;

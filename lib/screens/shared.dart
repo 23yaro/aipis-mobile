@@ -21,3 +21,7 @@ void makeAlertWindow(BuildContext context, String s) {
     },
   );
 }
+
+void gotoAuth(BuildContext context) {
+  Navigator.pushNamedAndRemoveUntil(context, '/auth', (route) => false);
+}

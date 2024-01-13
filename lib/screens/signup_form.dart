@@ -73,6 +73,22 @@ class SignUpState extends State<SignUp> {
                         onSaved: (v) {
                           password = v!;
                         }),
+                    // TextFormField(
+                    //     keyboardType: TextInputType.visiblePassword,
+                    //     obscureText: true,
+                    //     enableSuggestions: false,
+                    //     autocorrect: false,
+                    //     decoration: const InputDecoration(
+                    //       labelText: 'Повторите пароль',
+                    //       prefixIcon: Icon(Icons.password),
+                    //     ),
+                    //     validator: (s) {
+                    //       if (s == null || s.isEmpty || s != password) {
+                    //         return "Введите такой же пароль";
+                    //       }
+                    //
+                    //       return null;
+                    //     }),
                     ElevatedButton(
                         onPressed: authenticating
                             ? null
@@ -91,7 +107,7 @@ class SignUpState extends State<SignUp> {
                                       .signIn(email, password);
                                   if (AuthController.the.isLoggedIn()) {
                                     print(await CalendarEventRepository()
-                                        .getAllEvents());
+                                        .getAll());
                                     if (context.mounted) {
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');

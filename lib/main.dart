@@ -4,7 +4,7 @@ import 'package:aipis_calendar/screens/login_form.dart';
 import 'package:aipis_calendar/screens/signup_form.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
-import './screens/todo_screen.dart';
+import './screens/event_screen.dart';
 import './screens/home.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'screens/auth.dart';
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/auth': (context) => Auth(),
         '/login': (context) => Login(),
         '/signup': (context) => SignUp(),
-        '/todo_screen': (context) => task(),
+        '/edit': (context) => EventEditor(),
       },
     );
   }

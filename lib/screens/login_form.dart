@@ -89,7 +89,7 @@ class LoginState extends State<Login> {
                                       .signIn(email, password);
                                   if (AuthController.the.isLoggedIn()) {
                                     print(await CalendarEventRepository()
-                                        .getAllEvents());
+                                        .getAll());
                                     if (context.mounted) {
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
