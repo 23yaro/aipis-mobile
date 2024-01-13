@@ -44,7 +44,14 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                       child: FutureBuilder<List<CalendarEvent>>(
-                          future: _getCurrentWeek(),
+                          future: () async {
+                            try {
+                              return await _getCurrentWeek();
+                            } on NotLoggedInException {
+                              Future.microtask(() => gotoAuth(context));
+                              return List<CalendarEvent>.empty();
+                            }
+                          }.call(),
                           builder: (BuildContext context,
                                   AsyncSnapshot<List<CalendarEvent>> list) =>
                               ListView(
@@ -294,12 +301,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<CalendarEvent>> _getCurrentWeek() async {
-    List<CalendarEvent> tasks =
-        (await CalendarEventRepository().getAll()).where((element) {
-      print(
-          "${element.name}: ${element.dateTime.weekday} vs $currentDayOfWeek");
-      return element.dateTime.weekday == currentDayOfWeek;
-    }).toList();
+    List<CalendarEvent> tasks = (await CalendarEventRepository().getAll())
+        .where((element) => element.dateTime.weekday == currentDayOfWeek)
+        .toList();
     tasks.sort((a, b) {
       return a.dateTime.compareTo(b.dateTime);
     });
