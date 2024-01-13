@@ -52,7 +52,9 @@ class _HomeState extends State<Home> {
                                           ?.map((ce) => Column(
                                                 children: [
                                                   Text(
-                                                      '${DateFormat('Hm').format(ce.dateTime)} ${ce.tagIds.map((e) => "$e").join(" ")}'),
+                                                      '${DateFormat('Hm').format(ce.dateTime)} ${ce.tagIds.map((e) => e.name).join(", ")}',
+                                                      textAlign:
+                                                          TextAlign.center),
                                                   CalendarEventItem(
                                                     calendarEvent: ce,
                                                     onEventCompleted:
@@ -191,8 +193,7 @@ class _HomeState extends State<Home> {
 
   Future<void> _CEOpen(CalendarEvent ce) async {
     // Ждём, пока пользователь закончит редактировать
-    final result =
-        await Navigator.pushNamed(context, '/edit', arguments: ce);
+    final result = await Navigator.pushNamed(context, '/edit', arguments: ce);
 
     if (!mounted) {
       return;
