@@ -25,3 +25,5 @@ void makeAlertWindow(BuildContext context, String s) {
 void gotoAuth(BuildContext context) {
   Navigator.pushNamedAndRemoveUntil(context, '/auth', (route) => false);
 }
+
+int distanceToWeekDay(int from, int to) => (7 + to - from) % 7;

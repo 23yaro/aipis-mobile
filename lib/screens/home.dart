@@ -16,7 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  num curDay = int.parse(DateFormat('d').format(DateTime.now()));
+  // Текущий день недели 1..7 с понедельника
   int currentDayOfWeek = DateTime.now().weekday;
   final _ceController = TextEditingController();
 
@@ -174,7 +174,11 @@ class _HomeState extends State<Home> {
       CalendarEvent add = await createEvent(
           toDo,
           '',
-          DateTime(now.year, now.month, curDay.toInt(), selectedTime.hour,
+          DateTime(
+              now.year,
+              now.month,
+              now.day + distanceToWeekDay(now.weekday, currentDayOfWeek),
+              selectedTime.hour,
               selectedTime.minute));
       // TODO: same
       setState(() {});
@@ -206,15 +210,17 @@ class _HomeState extends State<Home> {
 
   final DateFormat formatter = DateFormat('EEEE', 'ru_RU');
 
+  String getWeekDayName(int dayOfWeek) => toBeginningOfSentenceCase(
+      formatter.dateSymbols.STANDALONEWEEKDAYS[dayOfWeek % 7]);
+
   AppBar _buildAppBar() {
-    final now = DateTime.now();
     return AppBar(
       leading: const DrawerButton(),
       backgroundColor: tdBGColor,
       elevation: 0,
-      title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Text(toBeginningOfSentenceCase(formatter.dateSymbols.STANDALONEWEEKDAYS[currentDayOfWeek]))
-      ]),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [Text(getWeekDayName(currentDayOfWeek))]),
     );
   }
 
@@ -232,8 +238,13 @@ class _HomeState extends State<Home> {
                 .map((e) => ListTile(
                       onTap: () {
                         setState(() {
-                          // TODO:
-                          currentDayOfWeek = e.key;
+                          // Мы используем дни недели от 1 до 7 с понедельника,
+                          // а в этом списке дни недели идут от 0 до 6 с воскресенья
+                          if (e.key == 0) {
+                            currentDayOfWeek = 7;
+                          } else {
+                            currentDayOfWeek = e.key;
+                          }
                         });
                       },
                       title: Text(
@@ -283,9 +294,12 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<CalendarEvent>> _getCurrentWeek() async {
-    List<CalendarEvent> tasks = (await CalendarEventRepository().getAll())
-        .where((element) => element.dateTime.weekday == currentDayOfWeek)
-        .toList();
+    List<CalendarEvent> tasks =
+        (await CalendarEventRepository().getAll()).where((element) {
+      print(
+          "${element.name}: ${element.dateTime.weekday} vs $currentDayOfWeek");
+      return element.dateTime.weekday == currentDayOfWeek;
+    }).toList();
     tasks.sort((a, b) {
       return a.dateTime.compareTo(b.dateTime);
     });
